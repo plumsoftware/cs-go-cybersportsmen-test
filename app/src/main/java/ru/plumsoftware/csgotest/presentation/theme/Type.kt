@@ -21,6 +21,6 @@ val Typography = Typography(
         fontFamily = defaultFont,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        letterSpacing = 0.3.sp
+        letterSpacing = 0.5.sp
     )
 )

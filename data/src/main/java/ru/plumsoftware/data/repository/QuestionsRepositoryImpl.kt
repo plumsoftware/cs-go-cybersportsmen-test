@@ -403,6 +403,6 @@ class QuestionsRepositoryImpl : QuestionsRepository {
                 listOf("Да", "Нет", "Останется 1 хп", "Не знаю")
             )
         )
-        return questions.shuffled().take(20)
+        return questions.shuffled().take(25)
     }
 }

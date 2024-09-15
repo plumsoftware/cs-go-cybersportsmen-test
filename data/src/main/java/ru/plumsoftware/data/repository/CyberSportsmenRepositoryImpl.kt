@@ -20,7 +20,7 @@ class CyberSportsmenRepositoryImpl : CyberSportsmenRepository {
             CyberSportsmen("dupreeh", 641298L, R.drawable.dupreeh),
             CyberSportsmen("gla1ve", 632283L, R.drawable.gla1ve),
         )
-        val index = Random(cybersportsmenList.size).nextInt()
+        val index = Random.nextInt(from = 0, until = cybersportsmenList.size)
         return cybersportsmenList[index]
     }
 }

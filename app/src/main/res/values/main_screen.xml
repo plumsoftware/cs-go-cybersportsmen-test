@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="back_content_description">Задний фон</string>
+    <string name="retry_test">Пройти ещё раз</string>
+    <string name="money">Ваш потенциальный доход</string>
 </resources>

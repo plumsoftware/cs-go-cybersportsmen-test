@@ -23,3 +23,4 @@ rootProject.name = "Тест на киберспортсмена"
 include(":app")
 include(":data")
 include(":domain")
+include(":back")

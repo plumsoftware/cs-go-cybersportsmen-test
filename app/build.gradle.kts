@@ -73,6 +73,7 @@ dependencies {
 
 //    Koin
     implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     implementation(libs.koin.core)
 
 //    UI controller
@@ -84,4 +85,5 @@ dependencies {
 //    Modules
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":back"))
 }

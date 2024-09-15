@@ -1,4 +1,4 @@
-package ru.plumsoftware.csgotest.presentation.ui.theme
+package ru.plumsoftware.csgotest.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

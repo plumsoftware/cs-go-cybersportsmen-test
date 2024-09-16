@@ -52,6 +52,7 @@ class MainViewModel(
                     state.update {
                         it.copy(
                             isFinish = true,
+                            isVisibleButtons = false,
                             cyberSportsmen = cyberSportsmenRepository.getRandomPlayer()
                         )
                     }
@@ -62,6 +63,7 @@ class MainViewModel(
                     it.copy(
                         isFinish = false,
                         currentQuestion = 0,
+                        isVisibleButtons = true,
                         questions = questionsRepository.getQuestions().asSequence()
                     )
                 }

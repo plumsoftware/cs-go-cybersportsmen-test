@@ -10,5 +10,6 @@ data class MainState(
     val currentQuestion: Int,
     val cyberSportsmen: CyberSportsmen = CyberSportsmen.empty(),
     val isFinish: Boolean = false,
-    val isVisibleText: Boolean = true
+    val isVisibleText: Boolean = true,
+    val isVisibleButtons: Boolean = true,
 )

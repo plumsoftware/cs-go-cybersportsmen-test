@@ -3,7 +3,6 @@ package ru.plumsoftware.csgotest.presentation.main_screen
 import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -32,9 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -52,6 +48,11 @@ import ru.plumsoftware.csgotest.presentation.theme.CsGoTheTestGameTheme
 import ru.plumsoftware.data.repository.QuestionsRepositoryImpl
 import ru.plumsoftware.domain.model.CyberSportsmen
 import ru.plumsoftware.domain.model.Question
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.ui.unit.IntOffset
 
 @Composable
 fun MainScreen(state: State<MainState>, onMainIntent: (MainScreenIntent) -> Unit) {
@@ -61,6 +62,7 @@ fun MainScreen(state: State<MainState>, onMainIntent: (MainScreenIntent) -> Unit
         isFinish = state.value.isFinish,
         cyberSportsmen = state.value.cyberSportsmen,
         isVisibleText = state.value.isVisibleText,
+        isVisibleButtons = state.value.isVisibleButtons,
         onMainIntent = onMainIntent
     )
 }
@@ -73,6 +75,7 @@ private fun MainScreenContent(
     isFinish: Boolean,
     cyberSportsmen: CyberSportsmen,
     isVisibleText: Boolean,
+    isVisibleButtons: Boolean,
     onMainIntent: (MainScreenIntent) -> Unit
 ) {
 
@@ -82,12 +85,21 @@ private fun MainScreenContent(
         label = "question text scale"
     )
 
+    val ver: FiniteAnimationSpec<IntOffset> = tween(
+        durationMillis = 400,
+        easing = LinearOutSlowInEasing
+    )
+    val fade: FiniteAnimationSpec<Float> = tween(
+        durationMillis = 400,
+        easing = FastOutSlowInEasing
+    )
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Image(
             painter = painterResource(back),
             contentDescription = stringResource(R.string.back_content_description),
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillHeight
         )
 
         Column(
@@ -101,7 +113,7 @@ private fun MainScreenContent(
                 modifier = Modifier
                     .wrapContentWidth()
                     .padding(all = 24.dp)
-                    .weight(1.0f)
+                    .weight(if (isFinish) 1.4f else 1.0f)
             ) {
                 Card(
                     modifier = Modifier
@@ -118,14 +130,44 @@ private fun MainScreenContent(
                         contentColor = MaterialTheme.colorScheme.onTertiary
                     )
                 ) {
-                    if (isFinish)
+                    AnimatedVisibility(
+                        visible = isFinish,
+                        enter = fadeIn(
+                            tween(
+                                durationMillis = 800,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            tween(
+                                durationMillis = 200,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+                    ) {
                         CyberSportsmenItem(
                             cyberSportsmen = cyberSportsmen,
                             onRetryClick = {
-                                onMainIntent(MainScreenIntent.RetryClick)
+
                             }
                         )
-                    else
+                    }
+
+                    AnimatedVisibility(
+                        visible = !isFinish,
+                        enter = fadeIn(
+                            tween(
+                                durationMillis = 800,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            tween(
+                                durationMillis = 200,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+                    ) {
                         Text(
                             modifier = Modifier
                                 .wrapContentWidth()
@@ -135,26 +177,61 @@ private fun MainScreenContent(
                             text = question.question,
                             style = MaterialTheme.typography.bodyLarge
                         )
+                    }
                 }
             }
 
-            if (!isFinish)
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1.0f)
-                        .padding(all = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = 12.dp,
-                        alignment = Alignment.CenterHorizontally
+            if (isFinish) {
+                OutlinedButton(
+                    modifier = Modifier,
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     ),
-                    verticalArrangement = Arrangement.spacedBy(
-                        space = 12.dp,
-                        alignment = Alignment.CenterVertically
+                    border = BorderStroke(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.scrim
                     ),
-                    maxItemsInEachRow = 2
+                    onClick = {
+                        onMainIntent(MainScreenIntent.RetryClick)
+                    }
                 ) {
-                    question.answers.forEachIndexed { index, s ->
+                    Text(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(horizontal = 12.dp, vertical = 24.dp),
+                        textAlign = TextAlign.Start,
+                        text = stringResource(R.string.retry_test),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1.0f)
+                    .padding(all = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = 12.dp,
+                    alignment = Alignment.CenterHorizontally
+                ),
+                verticalArrangement = Arrangement.spacedBy(
+                    space = 12.dp,
+                    alignment = Alignment.CenterVertically
+                ),
+                maxItemsInEachRow = 2
+            ) {
+                question.answers.forEachIndexed { index, s ->
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .defaultMinSize(minHeight = 80.dp)
+                            .weight(1.0f),
+                        visible = isVisibleButtons,
+                        enter = fadeIn(fade) + slideInVertically(ver),
+                        exit = fadeOut(fade) + slideOutVertically(ver)
+                    ) {
                         OutlinedButton(
                             modifier = Modifier
                                 .defaultMinSize(minHeight = 80.dp)
@@ -183,6 +260,7 @@ private fun MainScreenContent(
                         }
                     }
                 }
+            }
         }
     }
 }
@@ -199,6 +277,7 @@ private fun MainScreenContentPreview() {
                 cyberSportsmen = CyberSportsmen(),
                 isFinish = false,
                 isVisibleText = true,
+                isVisibleButtons = true,
                 onMainIntent = {}
             )
         }
